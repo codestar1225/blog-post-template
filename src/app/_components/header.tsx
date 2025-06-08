@@ -21,7 +21,7 @@ const Header = () => {
   if (loading) return;
   return (
     <>
-      <header className="flex justify-between py-5 px-5 fixed top-0 left-0 w-full tracking-wider">
+      <header className="flex justify-between py-5 px-5 tracking-wider">
         <a
           href="/blog"
           className="rounded-lg border-foreground border px-3 py-1 bg-foreground text-background"

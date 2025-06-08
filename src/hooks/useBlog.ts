@@ -1,6 +1,6 @@
 "use client";
 import { AuthErrorResponse, AuthSuccessResponse } from "@/types/authApiType";
-import { SIGNIN } from "@/utils/constant";
+import { PUBLISH, SIGNIN } from "@/utils/constant";
 import axios, { AxiosResponse } from "axios";
 import { useState } from "react";
 
@@ -15,13 +15,14 @@ const useBlog = () => {
   };
 
   // login
-  const login = async (
-    idToken: string | undefined
+  type Data = { title: string; desc: string; tags: string[] };
+  const publishBlog = async (
+    data: Data | undefined
   ): Promise<AuthSuccessResponse | AuthErrorResponse> => {
     setLoading(true);
     try {
       const res: AxiosResponse<AuthSuccessResponse | AuthErrorResponse> =
-        await axios.post(SIGNIN, { idToken: idToken }, config);
+        await axios.post(PUBLISH, data, config);
       return res.data; // Return the response data
     } catch (error: unknown) {
       // Type the error to AxiosError and handle the error
@@ -40,7 +41,7 @@ const useBlog = () => {
     }
   };
 
-  return { login, loading };
+  return { publishBlog, loading };
 };
 
 export default useBlog;
