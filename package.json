@@ -11,16 +11,18 @@
   "dependencies": {
     "@mendable/firecrawl-js": "^1.25.2",
     "axios": "^1.9.0",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.511.0",
     "next": "15.1.8",
     "next-auth": "^4.24.11",
-    "nodemailer": "^7.0.3",
     "openai": "^4.103.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
