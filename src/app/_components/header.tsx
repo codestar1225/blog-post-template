@@ -1,66 +1,38 @@
 "use client";
 
-import { useEffect } from "react";
-import { getSession, signIn } from "next-auth/react";
-import { getItem, removeItem, setItem } from "@/utils/localstorage";
-import Cookies from "js-cookie";
-import { toast } from "react-toastify";
+import useVerifyAuth from "@/hooks/userVerifyAuth";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import useAuth from "@/hooks/useAuth";
+import Cookies from "js-cookie";
 
 const Header = () => {
+  const { loading, isAuth } = useVerifyAuth();
   const router = useRouter();
-  const { login, loading } = useAuth();
-  //cutstomized sign in
-  useEffect(() => {
-    const fetchSession = async () => {
-      const session = await getSession();
-      const isLogin = getItem("isLogin");
-      if (session && isLogin) {
-        removeItem("isLogin");
-        const res = await login(session.idToken);
-        if ("token" in res) {
-          if ("user" in res) {
-            Cookies.set("user", JSON.stringify(res.user));
-          }
-          // Successfully authenticated and save token
-          Cookies.set("token", res.token, { expires: 4 });
-          //check the there was request routing url
-          const reqUrl = Cookies.get("reqUrl");
-          Cookies.remove("reqUrl");
-          toast.success(res.message, {
-            autoClose: 2000,
-            onClose: () => router.push(`${reqUrl ? `${reqUrl}` : "/"}`),
-          });
-        } else {
-          // Authentication failed, handle error
-          toast.error(res.message || "Something went wrong", {
-            autoClose: 2000,
-          });
-        }
-      }
-    };
-    fetchSession();
-  }, []);
-  const handleLogIn = async () => {
-    if (loading) return;
-    try {
-      await signIn("google", { redirect: false });
-      setItem("isLogin", true);
-      console.log("success google sigin in");
-    } catch (error) {
-      console.error("Failed google signup", error);
+  const handleAuth = async () => {
+    if (!isAuth) {
+      router.push("/login");
+    } else {
+      await signOut({ callbackUrl: "/" });
+      Cookies.remove("token");
+      Cookies.remove("reqUrl");
+      Cookies.remove("user");
     }
   };
-
+  if (loading) return;
   return (
     <>
-      <header className="flex justify-end py-5 px-5">
-        <button
-          onClick={handleLogIn}
-          className="rounded-lg border-foreground border px-3"
+      <header className="flex justify-between py-5 px-5 fixed top-0 left-0 w-full tracking-wider">
+        <a
+          href="/blog"
+          className="rounded-lg border-foreground border px-3 py-1 bg-foreground text-background"
         >
-          Log In by Google
+          View Blogs
+        </a>
+        <button
+          onClick={handleAuth}
+          className="rounded-lg border-foreground border px-3 py-1 bg-foreground text-background"
+        >
+          {isAuth ? "Logout" : "Login"}
         </button>
       </header>
     </>
