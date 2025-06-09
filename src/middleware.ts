@@ -32,5 +32,5 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  matcher: ["/profile", "/settings", "/upload/:path*", "/dashboard"],
+  matcher: ["/blog/:path*"],
 };

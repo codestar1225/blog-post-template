@@ -4,6 +4,7 @@ import useBlog from "@/hooks/useBlog";
 import { ChangeEvent, ReactElement, useState } from "react";
 import Tag from "@/app/_components/tag.json";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const Page = (): ReactElement => {
   const [title, setTitle] = useState<string>("");
@@ -11,8 +12,9 @@ const Page = (): ReactElement => {
   const [tag, setTag] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
   const { loading, publishBlog } = useBlog();
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title) {
       return toast.error("Enter the Title", { autoClose: 2000 });
@@ -22,7 +24,15 @@ const Page = (): ReactElement => {
       return toast.error("Select the one more tag", { autoClose: 2000 });
     }
     const data = { title, desc, tags };
-    publishBlog(data);
+    const res = await publishBlog(data);
+    if (res.status === 201) {
+      return toast.success(res.message, {
+        autoClose: 2000,
+        onClose: () => router.push("/blog"),
+      });
+    } else {
+      return toast.error(res.message, { autoClose: 2000 });
+    }
   };
 
   const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
