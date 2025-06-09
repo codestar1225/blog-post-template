@@ -1,10 +1,16 @@
 "use client";
 
 import {
-  PublishErrorResponse,
-  PublishSuccessResponse,
+  EditBlogErrorRes,
+  EditBlogSuccessRes,
+  GetBlogErrorRes,
+  GetBlogsErrorRes,
+  GetBlogsSuccessRes,
+  GetBlogSuccessRes,
+  PublishErrorRes,
+  PublishSuccessRes,
 } from "@/types/blogApiType";
-import { PUBLISH } from "@/utils/constant";
+import { GETBLOG, GETBLOGS, PUBLISH, UPDATEBLOG } from "@/utils/constant";
 import axios, { AxiosResponse } from "axios";
 import { useState } from "react";
 import Cookies from "js-cookie";
@@ -20,18 +26,51 @@ const useBlog = () => {
       Authorization: `Bearer ${token}`,
     },
   };
+  const blogConfig = (blogId: string) => ({
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      "x-blog-id": blogId,
+    },
+  });
 
   //publish blog
-  type Data = { title: string; desc: string; tags: string[] };
-
+  type BlogType = { title: string; desc: string; tags: string[] };
   const publishBlog = async (
-    data: Data | undefined
-  ): Promise<PublishSuccessResponse | PublishErrorResponse> => {
+    data: BlogType | undefined
+  ): Promise<PublishSuccessRes | PublishErrorRes> => {
     setLoading(true);
     try {
-      const res: AxiosResponse<PublishSuccessResponse | PublishErrorResponse> =
+      const res: AxiosResponse<PublishSuccessRes | PublishErrorRes> =
         await axios.post(PUBLISH, data, config);
       return res.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return {
+          message:
+            error.response?.data?.message === "Invalid data provided."
+              ? "Invalid data provided."
+              : "Something went wrong",
+          status: error.response?.status || 500, // Add default/fallback status
+        };
+      }
+
+      return {
+        message: "An unknown error occurred",
+        status: 500,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //get blogs
+  const getBlogs = async (): Promise<GetBlogsSuccessRes | GetBlogsErrorRes> => {
+    setLoading(true);
+    try {
+      const res: AxiosResponse<GetBlogsSuccessRes | GetBlogsErrorRes> =
+        await axios.get(GETBLOGS, config);
+      return { ...res.data, status: res.status };
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return {
@@ -53,7 +92,67 @@ const useBlog = () => {
     }
   };
 
-  return { publishBlog, loading };
+  //get blog
+  const getBlog = async (
+    blogId: string
+  ): Promise<GetBlogSuccessRes | GetBlogErrorRes> => {
+    setLoading(true);
+    try {
+      const res: AxiosResponse<GetBlogSuccessRes | GetBlogErrorRes> =
+        await axios.get(GETBLOG, blogConfig(blogId));
+      return { ...res.data, status: res.status };
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return {
+          message:
+            error.response?.data?.message ===
+            "User doesn't exist, please sign up firstly"
+              ? "User doesn't exist, please sign up firstly"
+              : "Something went wrong",
+          status: error.response?.status || 500, // Add default/fallback status
+        };
+      }
+
+      return {
+        message: "An unknown error occurred",
+        status: 500,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+  //get blog
+  const updateBlog = async (
+    blog: BlogType,
+    blogId: string
+  ): Promise<EditBlogSuccessRes | EditBlogErrorRes> => {
+    setLoading(true);
+    try {
+      const res: AxiosResponse<EditBlogSuccessRes | EditBlogErrorRes> =
+        await axios.put(UPDATEBLOG, blog, blogConfig(blogId));
+      return { ...res.data, status: res.status };
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return {
+          message:
+            error.response?.data?.message ===
+            "User doesn't exist, please sign up firstly"
+              ? "User doesn't exist, please sign up firstly"
+              : "Something went wrong",
+          status: error.response?.status || 500, // Add default/fallback status
+        };
+      }
+
+      return {
+        message: "An unknown error occurred",
+        status: 500,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { publishBlog, getBlogs, getBlog, updateBlog, loading };
 };
 
 export default useBlog;

@@ -22,12 +22,12 @@ const Header = () => {
   return (
     <>
       <header className="flex justify-between py-5 px-5 tracking-wider">
-        <a
-          href="/blog"
+        <button
+          onClick={() => router.push("/blog")}
           className="rounded-lg border-foreground border px-3 py-1 bg-foreground text-background"
         >
           View Blogs
-        </a>
+        </button>
         <button
           onClick={handleAuth}
           className="rounded-lg border-foreground border px-3 py-1 bg-foreground text-background"
