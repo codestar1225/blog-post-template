@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  DeleteBlogErrorRes,
+  DeleteBlogSuccessRes,
   EditBlogErrorRes,
   EditBlogSuccessRes,
   GetBlogErrorRes,
@@ -10,7 +12,13 @@ import {
   PublishErrorRes,
   PublishSuccessRes,
 } from "@/types/blogApiType";
-import { GETBLOG, GETBLOGS, PUBLISH, UPDATEBLOG } from "@/utils/constant";
+import {
+  DELETEBLOG,
+  GETBLOG,
+  GETBLOGS,
+  PUBLISH,
+  UPDATEBLOG,
+} from "@/utils/constant";
 import axios, { AxiosResponse } from "axios";
 import { useState } from "react";
 import Cookies from "js-cookie";
@@ -121,7 +129,7 @@ const useBlog = () => {
       setLoading(false);
     }
   };
-  //get blog
+  //update blog
   const updateBlog = async (
     blog: BlogType,
     blogId: string
@@ -151,8 +159,37 @@ const useBlog = () => {
       setLoading(false);
     }
   };
+  //delete blog
+  const deleteBlog = async (
+    blogId: string
+  ): Promise<DeleteBlogSuccessRes | DeleteBlogErrorRes> => {
+    setLoading(true);
+    try {
+      const res: AxiosResponse<DeleteBlogSuccessRes | DeleteBlogErrorRes> =
+        await axios.delete(DELETEBLOG, blogConfig(blogId));
+      return { ...res.data, status: res.status };
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return {
+          message:
+            error.response?.data?.message ===
+            "User doesn't exist, please sign up firstly"
+              ? "User doesn't exist, please sign up firstly"
+              : "Something went wrong",
+          status: error.response?.status || 500, // Add default/fallback status
+        };
+      }
 
-  return { publishBlog, getBlogs, getBlog, updateBlog, loading };
+      return {
+        message: "An unknown error occurred",
+        status: 500,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { publishBlog, getBlogs, getBlog, updateBlog, deleteBlog, loading };
 };
 
 export default useBlog;

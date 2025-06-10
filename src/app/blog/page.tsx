@@ -2,44 +2,52 @@
 
 import useBlog from "@/hooks/useBlog";
 import { BlogType } from "@/types/blogApiType";
+import { confirmModal } from "@/types/confirmModal";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useState } from "react";
+import { ChangeEvent, useLayoutEffect, useState } from "react";
+import { toast } from "react-toastify";
+import LoadingMiddle from "../_components/ui/loading";
 
 const Page = () => {
-  const { getBlogs, loading } = useBlog();
+  const { getBlogs, deleteBlog, loading } = useBlog();
   const [blogs, setBlogs] = useState<BlogType[]>([]);
+  const [blogs2, setBlogs2] = useState<BlogType[]>([]);
   const [userId, setUserId] = useState<string>();
+  const [localLoading, setLocalLoading] = useState(true);
+  const [keyword, setKeyword] = useState<string>("");
+  const [filter, setFilter] = useState<string>("all");
   const router = useRouter();
   useLayoutEffect(() => {
     (async () => {
       const res = await getBlogs();
       if (res.status === 200 && "blogs" in res) {
         setBlogs(res.blogs);
+        setBlogs2(res.blogs);
         setUserId(res.userId);
+        console.log(res.userId);
       }
-      console.log(res);
+      setLocalLoading(false);
     })();
   }, []);
 
-  const handleDelete = async (blogId: string) => {
-    if (!confirm("Are you sure you want to delete this blog?")) return;
+  const handleDelete = (blogId: string) => {
+    confirmModal("Are you sure you want to delete this blog?", () =>
+      deleteOne(blogId)
+    );
+  };
 
-    try {
-      const res = await fetch(`/api/blog/delete/${blogId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer`, // Set your actual token
-        },
+  const deleteOne = async (blogId: string) => {
+    const res = await deleteBlog(blogId);
+    if (res.status === 200 && "blogs" in res) {
+      setBlogs(res.blogs);
+      setUserId(res.userId);
+      toast.success(res.message, {
+        autoClose: 2000,
       });
-
-      if (res.ok) {
-        // setBlogs((prev) => prev.filter((b) => b._id !== blogId));
-      } else {
-        const errorData = await res.json();
-        alert("Failed to delete: " + errorData.message);
-      }
-    } catch (err) {
-      alert("Error deleting blog.");
+    } else {
+      toast.error(res.message || "Something went wrong", {
+        autoClose: 2000,
+      });
     }
   };
 
@@ -47,56 +55,135 @@ const Page = () => {
     router.push(`/blog/${blogId}`);
   };
 
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center text-lg font-semibold">
-        Loading blogs...
-      </div>
+  // filter my blogs
+  const handleFilter = (filt: string) => {
+    if (filt === "all") {
+      setBlogs(blogs2);
+      setFilter("all");
+    } else if (filt === "mine") {
+      const filteredBlogs = blogs2.filter((item) => item.userId === userId);
+      setBlogs(filteredBlogs);
+      setFilter("mine");
+    }
+  };
+  //search specific blogs
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const keyword = e.target.value;
+    setKeyword(keyword);
+    const filteredBlogs = blogs2.filter(
+      (item) =>
+        item?.desc?.toUpperCase().includes(keyword.toUpperCase()) ||
+        item?.title?.toUpperCase().includes(keyword.toUpperCase()) ||
+        item?.userName?.toUpperCase().includes(keyword.toUpperCase()) ||
+        item?.tags?.some((tag) =>
+          tag.toUpperCase().includes(keyword.toUpperCase())
+        )
     );
-  } else {
-    return (
-      <main className="min-h-screen px-6 py-10">
-        <h1 className="text-3xl font-bold text-center mb-10">Latest Blogs</h1>
+    // detect if all blogs is.
+    if (keyword === "") {
+      setFilter("all");
+    } else {
+      setFilter("");
+    }
+    setBlogs(filteredBlogs);
+  };
+
+  if (localLoading || loading) return <LoadingMiddle />;
+
+  return (
+    <>
+      <header className="flex flex-wrap fixed right-0 left-0 justify-between items-center gap-4 px-6 py-4 border-b border-gray-300 bg-white dark:bg-black">
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleFilter("all")}
+            className={`px-4 py-1 rounded-full text-sm font-medium transition ${
+              filter === "all"
+                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                : "bg-gray-800 text-white"
+            }`}
+          >
+            All Blogs
+          </button>
+          <button
+            onClick={() => handleFilter("mine")}
+            className={`px-4 py-1 rounded-full text-sm font-medium transition ${
+              filter === "mine"
+                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                : "bg-gray-800 text-white"
+            }`}
+          >
+            My Blogs
+          </button>
+          <button
+            onClick={() => router.push("/blog/create")}
+            className="px-4 py-1 rounded-full text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+          >
+            Create
+          </button>
+        </div>
+        <input
+          type="search"
+          value={keyword}
+          onChange={handleSearch}
+          placeholder="Search blogs..."
+          className="px-4 py-1 text-background border border-gray-300 rounded-full w-full max-w-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </header>
+
+      <main className="px-6 py-10 mt-[80px] bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div className="grid gap-6 max-w-4xl mx-auto">
-          {blogs.map((item, index) => (
+          {[...blogs].reverse().map((item, index) => (
             <article
               key={index}
-              className="border-[2px] border-foreground shadow-lg rounded-2xl p-6 transition hover:shadow-xl"
+              className="border border-gray-300 dark:border-gray-700 shadow-md rounded-2xl p-6 bg-white dark:bg-gray-800 transition hover:shadow-xl"
             >
               <div className="flex justify-between items-start">
-                <h2 className="text-xl font-semibold text-gray-300">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {item.title}
                 </h2>
-
                 {item.userId === userId && (
                   <div className="flex gap-2">
                     <button
-                      className="text-blue-500 hover:underline text-sm"
+                      className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
                       onClick={() => handleEdit(item._id)}
                     >
-                      ✏️ Edit
+                      Edit
                     </button>
                     <button
-                      className="text-red-500 hover:underline text-sm"
+                      className="text-red-600 dark:text-red-400 hover:underline text-sm"
                       onClick={() => handleDelete(item._id)}
                     >
-                      🗑 Delete
+                      Delete
                     </button>
                   </div>
                 )}
               </div>
 
-              <p className="mt-2">{item.desc}</p>
-              <div className="mt-4 flex justify-between text-sm text-gray-500">
-                <span>👤 {item.userName}</span>
-                <span>🕒 {new Date(item.time).toLocaleString()}</span>
+              <p className="mt-3 text-gray-700 dark:text-gray-300">
+                {item.desc}
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {item.tags.map((tag, index) => (
+                  <span
+                    className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-[2px] rounded-full text-xs font-medium"
+                    key={index}
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-4 flex justify-between text-sm text-gray-500 dark:text-gray-400">
+                <span> {item.userName}</span>
+                <span> {new Date(item.time).toLocaleString()}</span>
               </div>
             </article>
           ))}
         </div>
       </main>
-    );
-  }
+    </>
+  );
 };
 
 export default Page;

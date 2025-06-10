@@ -20,22 +20,28 @@ const Header = () => {
   };
   if (loading) return;
   return (
-    <>
-      <header className="flex justify-between py-5 px-5 tracking-wider">
+    <header className="flex flex-wrap sticky top-0 items-center justify-between gap-3 py-5 px-6 bg-white dark:bg-black border-b border-gray-300 dark:border-gray-700 shadow-sm">
+      <div className="flex gap-3">
         <button
           onClick={() => router.push("/blog")}
-          className="rounded-lg border-foreground border px-3 py-1 bg-foreground text-background"
+          className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-800 text-white hover:bg-gray-700 transition"
         >
           View Blogs
         </button>
         <button
-          onClick={handleAuth}
-          className="rounded-lg border-foreground border px-3 py-1 bg-foreground text-background"
+          onClick={() => router.push("/")}
+          className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-800 text-white hover:bg-gray-700 transition"
         >
-          {isAuth ? "Logout" : "Login"}
+          Home
         </button>
-      </header>
-    </>
+      </div>
+      <button
+        onClick={handleAuth}
+        className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+      >
+        {isAuth ? "Logout" : "Login"}
+      </button>
+    </header>
   );
 };
 export default Header;

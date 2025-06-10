@@ -5,6 +5,7 @@ import { ChangeEvent, ReactElement, useEffect, useState } from "react";
 import Tag from "@/app/_components/tag.json";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
+import LoadingMiddle from "@/app/_components/ui/loading";
 
 const Page = (): ReactElement => {
   const params = useParams();
@@ -58,12 +59,8 @@ const Page = (): ReactElement => {
     setTags((prevTags) => [...prevTags, selectedTag]);
   };
 
-  if (localLoading)
-    return (
-      <div className="h-screen flex items-center justify-center text-lg font-semibold">
-        Loading blog...
-      </div>
-    );
+  if (localLoading) return <LoadingMiddle />;
+
   return (
     <main className="h-[90svh] flex justify-center items-center text-[16px]">
       <form

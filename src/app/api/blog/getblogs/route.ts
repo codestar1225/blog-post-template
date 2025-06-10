@@ -14,7 +14,8 @@ export const GET = async (req: NextRequest) => {
 
   try {
     let userId = "" as string;
-    const blogs = await Blog.find({}); 
+    const blogs = await Blog.find({}).sort({ createdAt: 1 }).lean();
+    console.log(blogs)
     if (isAuthSuccess(authResult)) userId = authResult.userId;
     return NextResponse.json(
       { message: "Blogs found.", blogs, userId },

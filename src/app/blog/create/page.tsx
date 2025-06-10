@@ -20,7 +20,7 @@ const Page = (): ReactElement => {
       return toast.error("Enter the Title", { autoClose: 2000 });
     } else if (!desc) {
       return toast.error("Fill the Description", { autoClose: 2000 });
-    } else if (!tags) {
+    } else if (tags.length === 0) {
       return toast.error("Select the one more tag", { autoClose: 2000 });
     }
     const data = { title, desc, tags };
@@ -42,12 +42,15 @@ const Page = (): ReactElement => {
   };
 
   return (
-    <main className="h-[90svh] flex justify-center items-center text-[16px]">
+    <main className="min-h-[90svh] flex items-center justify-center bg-gray-50 dark:bg-black px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-2xl mx-auto flex flex-col gap-3 justify-center items-center px-4 py-6 bg-white rounded-2xl shadow-xl text-gray-800"
+        className="w-full max-w-2xl bg-white dark:bg-zinc-900 text-gray-800 dark:text-gray-100 rounded-2xl shadow-2xl p-6 sm:p-10 space-y-6 transition-all"
       >
-        <div className="w-full">
+        <h2 className="text-2xl font-bold text-center mb-2">Create a Blog</h2>
+
+        {/* Title Input */}
+        <div>
           <label htmlFor="title" className="block mb-1 font-semibold">
             Title
           </label>
@@ -56,11 +59,12 @@ const Page = (): ReactElement => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter the title here..."
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
         </div>
 
-        <div className="w-full">
+        {/* Description Input */}
+        <div>
           <label htmlFor="desc" className="block mb-1 font-semibold">
             Description
           </label>
@@ -69,12 +73,13 @@ const Page = (): ReactElement => {
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder="Enter the description here..."
-            rows={4}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            rows={5}
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-800 rounded-lg px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
         </div>
 
-        <div className="w-full">
+        {/* Tags Dropdown */}
+        <div>
           <label htmlFor="tags" className="block mb-1 font-semibold">
             Tags
           </label>
@@ -82,7 +87,7 @@ const Page = (): ReactElement => {
             id="tags"
             value={tag}
             onChange={handleSelect}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
             <option value="" disabled>
               -- Select a tag --
@@ -94,28 +99,33 @@ const Page = (): ReactElement => {
             ))}
           </select>
 
-          <div className="mt-3 flex flex-wrap gap-2">
-            {tags.map((item, index) => (
-              <span
-                className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
-                key={index}
-              >
-                {item}
-              </span>
-            ))}
-          </div>
+          {/* Selected Tags */}
+          {tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {tags.map((item, index) => (
+                <span
+                  key={index}
+                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+                >
+                  #{item}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="w-full flex flex-col">
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 mt-4">
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50"
+            className="w-full sm:w-auto flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50"
           >
             {loading ? "Publishing..." : "Publish"}
           </button>
           <a
             href="/blog"
-            className="mt-4 w-full text-center bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50"
+            className="w-full sm:w-auto flex-1 bg-gray-600 hover:bg-gray-700 text-white text-center font-semibold py-2 px-4 rounded-lg transition"
           >
             Cancel
           </a>

@@ -42,13 +42,26 @@ export type GetBlogErrorRes = {
   status: number;
 };
 
-//edit blog
+//update blog
 export type EditBlogSuccessRes = {
   message: string;
   status: number;
 };
 
 export type EditBlogErrorRes = {
+  message: string;
+  status: number;
+};
+
+//delete blog
+export type DeleteBlogSuccessRes = {
+  blogs: BlogType[];
+  userId: string;
+  message: string;
+  status: number;
+};
+
+export type DeleteBlogErrorRes = {
   message: string;
   status: number;
 };
