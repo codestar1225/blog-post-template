@@ -42,7 +42,7 @@ const Page = (): ReactElement => {
   };
 
   return (
-    <main className="min-h-[90svh] flex items-center justify-center bg-gray-50 dark:bg-black px-4">
+    <main className="min-h-[100svh] flex items-center justify-center bg-gray-50 dark:bg-black px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-2xl bg-white dark:bg-zinc-900 text-gray-800 dark:text-gray-100 rounded-2xl shadow-2xl p-6 sm:p-10 space-y-6 transition-all"

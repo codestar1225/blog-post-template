@@ -43,7 +43,12 @@ const useBlog = () => {
   });
 
   //publish blog
-  type BlogType = { title: string; desc: string; tags: string[] };
+  type BlogType = {
+    title: string;
+    desc: string;
+    tags: string[];
+   
+  };
   const publishBlog = async (
     data: BlogType | undefined
   ): Promise<PublishSuccessRes | PublishErrorRes> => {

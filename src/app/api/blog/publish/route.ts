@@ -1,6 +1,7 @@
 import { authenticateApiRoute } from "@/lib/authMiddleware";
 import dbConnect from "@/lib/dbConnect";
 import Blog from "@/models/blogModel";
+import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 
 function isAuthSuccess(
@@ -19,21 +20,26 @@ export async function POST(req: NextRequest) {
 
     const { title, desc, tags } = body;
 
-    // ✅ Validate input
+    // Validate input
     if (!userId || !title || !desc || !tags || !Array.isArray(tags)) {
       return NextResponse.json(
         { message: "Invalid data provided.", status: 400 },
         { status: 400 }
       );
     }
+    //find username
+    const user = await User.findById(userId)
+      .select("userName")
+      .lean<{ userName: string }>();
 
-    // ✅ Save to DB
+    // Save to DB
     await Blog.create({
       userId,
+      userName: user?.userName,
       title,
       desc,
       tags,
-      time: Date.now(), // ✅ correct Date
+      time: Date.now(), // correct Date
     });
 
     return NextResponse.json(

@@ -20,7 +20,7 @@ const Header = () => {
   };
   if (loading) return;
   return (
-    <header className="flex flex-wrap sticky top-0 items-center justify-between gap-3 py-5 px-6 bg-white dark:bg-black border-b border-gray-300 dark:border-gray-700 shadow-sm">
+    <header className="flex flex-wrap fixed w-full z-50 top-0 items-center justify-between gap-3 py-5 px-6 bg-white dark:bg-black border-b border-gray-300 dark:border-gray-700 shadow-sm">
       <div className="flex gap-3">
         <button
           onClick={() => router.push("/blog")}

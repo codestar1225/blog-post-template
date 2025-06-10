@@ -7,9 +7,12 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useLayoutEffect, useState } from "react";
 import { toast } from "react-toastify";
 import LoadingMiddle from "../_components/ui/loading";
+import useVerifyAuth from "@/hooks/userVerifyAuth";
+import useUserSetting from "@/hooks/useUserSetting";
 
 const Page = () => {
   const { getBlogs, deleteBlog, loading } = useBlog();
+  const { checkUsername } = useUserSetting();
   const [blogs, setBlogs] = useState<BlogType[]>([]);
   const [blogs2, setBlogs2] = useState<BlogType[]>([]);
   const [userId, setUserId] = useState<string>();
@@ -17,6 +20,7 @@ const Page = () => {
   const [keyword, setKeyword] = useState<string>("");
   const [filter, setFilter] = useState<string>("all");
   const router = useRouter();
+  const { isAuth } = useVerifyAuth();
   useLayoutEffect(() => {
     (async () => {
       const res = await getBlogs();
@@ -88,6 +92,25 @@ const Page = () => {
     setBlogs(filteredBlogs);
   };
 
+  const handleCreate = async () => {
+    if (isAuth) {
+      const res = await checkUsername();
+      if (res.status === 200 && res.message === "Username exists.") {
+        router.push("/blog/create");
+      } else {
+        toast.error("Please set a username before creating.", {
+          autoClose: 2000,
+          onClose: () => router.push("/setusername"),
+        });
+      }
+    } else {
+      toast.error("Please login first.", {
+        autoClose: 2000,
+        onClose: () => router.push("/login"),
+      });
+    }
+  };
+
   if (localLoading || loading) return <LoadingMiddle />;
 
   return (
@@ -115,10 +138,16 @@ const Page = () => {
             My Blogs
           </button>
           <button
-            onClick={() => router.push("/blog/create")}
+            onClick={handleCreate}
             className="px-4 py-1 rounded-full text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
           >
             Create
+          </button>
+          <button
+            onClick={() => router.push("/setusername")}
+            className="px-4 py-1 rounded-full text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+          >
+            Setting
           </button>
         </div>
         <input
@@ -130,8 +159,8 @@ const Page = () => {
         />
       </header>
 
-      <main className="px-6 py-10 mt-[80px] bg-gray-50 dark:bg-gray-900 min-h-screen">
-        <div className="grid gap-6 max-w-4xl mx-auto">
+      <main className="px-6 py-10 mt-[68px] bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="grid gap-6 max-w-4xl mx-auto mt-[100px]">
           {[...blogs].reverse().map((item, index) => (
             <article
               key={index}

@@ -29,7 +29,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     await Blog.findByIdAndDelete(blogId).lean();
-    const blogs = await Blog.find({});
+    const blogs = await Blog.find({}).sort({ createdAt: 1 }).lean();
     return NextResponse.json(
       { message: "Deleted successfully.", blogs, userId },
       { status: 200 }
