@@ -28,11 +28,7 @@ const useAuth = () => {
       // Type the error to AxiosError and handle the error
       if (axios.isAxiosError(error)) {
         return {
-          message:
-            error.response?.data?.message ===
-            "User doesn't exist, please sign up firstly"
-              ? "User doesn't exist, please sign up firstly"
-              : "Something went wrong",
+          message: error.response?.data?.message && "Something went wrong.",
         };
       }
       return { message: "An unknown error occurred" };

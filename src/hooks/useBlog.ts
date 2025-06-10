@@ -23,7 +23,6 @@ import axios, { AxiosResponse } from "axios";
 import { useState } from "react";
 import Cookies from "js-cookie";
 
-// Define response types
 
 const useBlog = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -47,7 +46,6 @@ const useBlog = () => {
     title: string;
     desc: string;
     tags: string[];
-   
   };
   const publishBlog = async (
     data: BlogType | undefined
@@ -60,14 +58,10 @@ const useBlog = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return {
-          message:
-            error.response?.data?.message === "Invalid data provided."
-              ? "Invalid data provided."
-              : "Something went wrong",
+          message: error.response?.data?.message && "Something went wrong.",
           status: error.response?.status || 500, // Add default/fallback status
         };
       }
-
       return {
         message: "An unknown error occurred",
         status: 500,
@@ -87,11 +81,7 @@ const useBlog = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return {
-          message:
-            error.response?.data?.message ===
-            "User doesn't exist, please sign up firstly"
-              ? "User doesn't exist, please sign up firstly"
-              : "Something went wrong",
+          message: error.response?.data?.message && "Something went wrong.",
           status: error.response?.status || 500, // Add default/fallback status
         };
       }
@@ -117,11 +107,7 @@ const useBlog = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return {
-          message:
-            error.response?.data?.message ===
-            "User doesn't exist, please sign up firstly"
-              ? "User doesn't exist, please sign up firstly"
-              : "Something went wrong",
+          message: error.response?.data?.message && "Something went wrong.",
           status: error.response?.status || 500, // Add default/fallback status
         };
       }
@@ -147,15 +133,10 @@ const useBlog = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return {
-          message:
-            error.response?.data?.message ===
-            "User doesn't exist, please sign up firstly"
-              ? "User doesn't exist, please sign up firstly"
-              : "Something went wrong",
+          message: error.response?.data?.message && "Something went wrong.",
           status: error.response?.status || 500, // Add default/fallback status
         };
       }
-
       return {
         message: "An unknown error occurred",
         status: 500,
@@ -164,6 +145,7 @@ const useBlog = () => {
       setLoading(false);
     }
   };
+  
   //delete blog
   const deleteBlog = async (
     blogId: string
@@ -176,11 +158,7 @@ const useBlog = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return {
-          message:
-            error.response?.data?.message ===
-            "User doesn't exist, please sign up firstly"
-              ? "User doesn't exist, please sign up firstly"
-              : "Something went wrong",
+          message: error.response?.data?.message && "Something went wrong.",
           status: error.response?.status || 500, // Add default/fallback status
         };
       }

@@ -36,14 +36,10 @@ const useUserSetting = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return {
-          message:
-            error.response?.data?.message === "Invalid data provided."
-              ? "Invalid data provided."
-              : "Something went wrong",
+          message: error.response?.data?.message && "Something went wrong.",
           status: error.response?.status || 500, // Add default/fallback status
         };
       }
-
       return {
         message: "An unknown error occurred",
         status: 500,
@@ -64,14 +60,10 @@ const useUserSetting = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return {
-          message:
-            error.response?.data?.message === "Invalid data provided."
-              ? "Invalid data provided."
-              : "Something went wrong",
+          message: error.response?.data?.message && "Something went wrong.",
           status: error.response?.status || 500, // Add default/fallback status
         };
       }
-
       return {
         message: "An unknown error occurred",
         status: 500,
