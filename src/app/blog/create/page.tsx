@@ -5,6 +5,7 @@ import { ChangeEvent, ReactElement, useState } from "react";
 import Tag from "@/app/_components/tag.json";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Page = (): ReactElement => {
   const [title, setTitle] = useState<string>("");
@@ -123,12 +124,12 @@ const Page = (): ReactElement => {
           >
             {loading ? "Publishing..." : "Publish"}
           </button>
-          <a
+          <Link
             href="/blog"
             className="w-full sm:w-auto flex-1 bg-gray-600 hover:bg-gray-700 text-white text-center font-semibold py-2 px-4 rounded-lg transition"
           >
             Cancel
-          </a>
+          </Link>
         </div>
       </form>
     </main>

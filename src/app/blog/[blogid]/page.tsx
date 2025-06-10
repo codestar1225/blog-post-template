@@ -6,6 +6,7 @@ import Tag from "@/app/_components/tag.json";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import LoadingMiddle from "@/app/_components/ui/loading";
+import Link from "next/link";
 
 const Page = (): ReactElement => {
   const params = useParams();
@@ -133,12 +134,12 @@ const Page = (): ReactElement => {
           >
             {loading ? "Saving..." : "Save"}
           </button>
-          <a
+          <Link
             href="/blog"
             className="mt-4 w-full text-center bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50"
           >
             Cancel
-          </a>
+          </Link>
         </div>
       </form>
     </main>

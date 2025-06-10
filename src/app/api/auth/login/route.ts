@@ -70,8 +70,9 @@ export async function POST(req: NextRequest) {
         { status: 200 }
       );
     }
-  } catch (error: any) {
-    console.error("Google login error:", error.message);
-    return NextResponse.json({ message: error.message }, { status: 400 });
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Google login error:", err.message);
+    return NextResponse.json({ message: err.message }, { status: 400 });
   }
 }
